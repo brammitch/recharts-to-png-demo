@@ -17,6 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { useCurrentPng, useGenerateImage } from "recharts-to-png";
+
 import "./App.css";
 import { getLgData, getLgPieData, getSmPieData } from "./data.ts";
 
