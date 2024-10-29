@@ -191,7 +191,7 @@ function App(): JSX.Element {
       </div>
       <div className="download-all">
         <button onClick={handleDivDownload}>
-          <code>{"Download <div> Element"}</code>
+          <code>{"Download entire <div> Element via useGenerateImage"}</code>
         </button>
       </div>
     </div>
