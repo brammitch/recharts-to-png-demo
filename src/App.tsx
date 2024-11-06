@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { saveAs } from "file-saver";
 import { useCallback, useState } from "react";
 import {
@@ -17,8 +18,8 @@ import {
   YAxis,
 } from "recharts";
 import { useCurrentPng, useGenerateImage } from "recharts-to-png";
-
 import "./App.css";
+import githubLogo from "./assets/github-mark.svg";
 import { getLgData, getLgPieData, getSmPieData } from "./data.ts";
 
 function App(): React.JSX.Element {
@@ -49,10 +50,18 @@ function App(): React.JSX.Element {
   const [data02] = useState(getLgPieData());
   const [getPiePng, { ref: pieRef }] = useCurrentPng();
   const handlePieDownload = useCallback(async () => {
-    const png = await getPiePng();
-    if (png) {
-      saveAs(png, "pie-chart.png");
-    }
+    await getPiePng(async (blob) => {
+      try {
+        if (blob) {
+          const clipboardItems: ClipboardItem[] = [];
+          const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+          clipboardItems.push(clipboardItem);
+          await navigator.clipboard.write(clipboardItems);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
   }, [getPiePng]);
 
   // Composed chart setup
@@ -65,12 +74,57 @@ function App(): React.JSX.Element {
     }
   }, [getComposedPng]);
 
+  // Track hover state
+  const [hoverStatus, setHoverStatus] = useState<string>();
+  const handleSetHoverStatus = (status?: string) => {
+    setHoverStatus(status);
+  };
+
   return (
-    <div className="grid-container" ref={divRef}>
-      <div className="area-chart">
-        <h4>
-          <code>Example: useCurrentPng for Responsive Area Chart</code>
-        </h4>
+    <div
+      className={clsx(
+        "grid-container",
+        hoverStatus === "download-all" && "show-border"
+      )}
+      ref={divRef}
+    >
+      <div className="grid-header">
+        <span className="title">recharts-to-png</span>
+        <span className="github-link">
+          <a href="https://github.com/brammitch/recharts-to-png">
+            <img
+              src={githubLogo}
+              alt="GitHub logo"
+              style={{ height: "24px", width: "24px" }}
+            />
+          </a>
+        </span>
+      </div>
+      <div className="download-all">
+        <button
+          onClick={handleDivDownload}
+          onMouseEnter={() => {
+            handleSetHoverStatus("download-all");
+          }}
+          onMouseLeave={() => {
+            handleSetHoverStatus();
+          }}
+        >
+          <span className="download-button-content">
+            <i className="gg-software-download" />
+            <span className="download-button-text">
+              Download entire <code>{"<div>"}</code> via useGenerateImage
+            </span>
+          </span>
+        </button>
+      </div>
+      <div
+        className={clsx(
+          "area-chart",
+          hoverStatus === "area-chart" && "show-border"
+        )}
+      >
+        <code>Example: useCurrentPng for Responsive Area Chart</code>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={areaData}
@@ -108,14 +162,28 @@ function App(): React.JSX.Element {
           </AreaChart>
         </ResponsiveContainer>
         <br />
-        <button onClick={handleAreaDownload}>
-          <code>Download Area Chart</code>
+        <button
+          onClick={handleAreaDownload}
+          onMouseEnter={() => {
+            handleSetHoverStatus("area-chart");
+          }}
+          onMouseLeave={() => {
+            handleSetHoverStatus();
+          }}
+        >
+          <span className="download-button-content">
+            <i className="gg-software-download" />
+            <span className="download-button-text">Download Area Chart</span>
+          </span>
         </button>
       </div>
-      <div className="pie-chart">
-        <h4>
-          <code>Example: useCurrentPng for Responsive Pie Chart</code>
-        </h4>
+      <div
+        className={clsx(
+          "pie-chart",
+          hoverStatus === "pie-chart" && "show-border"
+        )}
+      >
+        <code>Example: useCurrentPng for Responsive Pie Chart</code>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart ref={pieRef}>
             <Pie
@@ -141,17 +209,33 @@ function App(): React.JSX.Element {
           </PieChart>
         </ResponsiveContainer>
         <br />
-        <button onClick={handlePieDownload}>
-          <code>Download Pie Chart</code>
+        <button
+          onClick={handlePieDownload}
+          onMouseEnter={() => {
+            handleSetHoverStatus("pie-chart");
+          }}
+          onMouseLeave={() => {
+            handleSetHoverStatus();
+          }}
+        >
+          <span className="download-button-content">
+            <i className="gg-copy" />
+            <span className="download-button-text">
+              Copy Pie Chart to Clipboard
+            </span>
+          </span>
         </button>
       </div>
-      <div className="composed-chart">
-        <h4>
-          <code>
-            Example: useCurrentPng for Responsive Composed Chart, with isLoading
-            for button state change
-          </code>
-        </h4>
+      <div
+        className={clsx(
+          "composed-chart",
+          hoverStatus === "composed-chart" && "show-border"
+        )}
+      >
+        <code>
+          Example: useCurrentPng for Responsive Composed Chart, with isLoading
+          for button state change
+        </code>
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={composedData} ref={composedRef}>
             <XAxis dataKey="name" />
@@ -171,27 +255,29 @@ function App(): React.JSX.Element {
           </ComposedChart>
         </ResponsiveContainer>
         <br />
-        <button disabled={isLoading} onClick={handleComposedDownload}>
+        <button
+          disabled={isLoading}
+          onClick={handleComposedDownload}
+          onMouseEnter={() => {
+            handleSetHoverStatus("composed-chart");
+          }}
+          onMouseLeave={() => {
+            handleSetHoverStatus();
+          }}
+        >
           {isLoading ? (
             <span className="download-button-content">
               <i className="gg-spinner" />
-              <span className="download-button-text">
-                <code>Downloading...</code>
-              </span>
+              <span className="download-button-text">Downloading...</span>
             </span>
           ) : (
             <span className="download-button-content">
               <i className="gg-software-download" />
               <span className="download-button-text">
-                <code>Download Composed Chart</code>
+                Download Composed Chart
               </span>
             </span>
           )}
-        </button>
-      </div>
-      <div className="download-all">
-        <button onClick={handleDivDownload}>
-          <code>{"Download entire <div> Element via useGenerateImage"}</code>
         </button>
       </div>
     </div>
