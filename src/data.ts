@@ -14,7 +14,7 @@ const smGen = rn.generator({
 
 export function getLgData(size = 100): Record<string, string | number>[] {
   return Array.from({ length: size }, (_, i) => ({
-    name: `Page ${i}`,
+    name: `Page ${i.toString()}`,
     uv: lgGen(),
     pv: lgGen(),
     amt: lgGen(),
@@ -23,14 +23,14 @@ export function getLgData(size = 100): Record<string, string | number>[] {
 
 export function getSmPieData(size = 10): Record<string, string | number>[] {
   return Array.from({ length: size }, (_, i) => ({
-    name: `Group ${i}`,
+    name: `Group ${i.toString()}`,
     value: smGen(),
   }));
 }
 
 export function getLgPieData(size = 10): Record<string, string | number>[] {
   return Array.from({ length: size }, (_, i) => ({
-    name: `Group ${i}`,
+    name: `Group ${i.toString()}`,
     value: lgGen(),
   }));
 }

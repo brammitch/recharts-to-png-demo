@@ -9,7 +9,9 @@ h4 {
   grid-template-rows: 80px 1fr 1fr;
   grid-template-columns: 1fr 1fr;
   width: 100%;
-  font: 0.7rem "Fira Sans", sans-serif;
+  font:
+    0.7rem "Fira Sans",
+    sans-serif;
 }
 
 .download-all {

@@ -1,4 +1,4 @@
-import FileSaver from "file-saver";
+import { saveAs } from "file-saver";
 import { useCallback, useState } from "react";
 import {
   Area,
@@ -21,16 +21,16 @@ import { useCurrentPng, useGenerateImage } from "recharts-to-png";
 import "./App.css";
 import { getLgData, getLgPieData, getSmPieData } from "./data.ts";
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   // Implement useGenerateImage to get an image of any element (not just a Recharts component)
-  const [getDivJpeg, { ref: divRef }] = useGenerateImage<HTMLDivElement>({
+  const [getDivJpeg, { ref: divRef }] = useGenerateImage({
     quality: 0.8,
     type: "image/jpeg",
   });
   const handleDivDownload = useCallback(async () => {
     const jpeg = await getDivJpeg();
     if (jpeg) {
-      FileSaver.saveAs(jpeg, "div-element.jpeg");
+      saveAs(jpeg, "div-element.jpeg");
     }
   }, [getDivJpeg]);
 
@@ -40,7 +40,7 @@ function App(): JSX.Element {
   const handleAreaDownload = useCallback(async () => {
     const png = await getAreaPng();
     if (png) {
-      FileSaver.saveAs(png, "area-chart.png");
+      saveAs(png, "area-chart.png");
     }
   }, [getAreaPng]);
 
@@ -51,7 +51,7 @@ function App(): JSX.Element {
   const handlePieDownload = useCallback(async () => {
     const png = await getPiePng();
     if (png) {
-      FileSaver.saveAs(png, "pie-chart.png");
+      saveAs(png, "pie-chart.png");
     }
   }, [getPiePng]);
 
@@ -61,7 +61,7 @@ function App(): JSX.Element {
   const handleComposedDownload = useCallback(async () => {
     const png = await getComposedPng();
     if (png) {
-      FileSaver.saveAs(png, "composed-chart.png");
+      saveAs(png, "composed-chart.png");
     }
   }, [getComposedPng]);
 
